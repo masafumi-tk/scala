@@ -8,8 +8,7 @@ import scala.collection.mutable.HashMap
 import scala.io.Source
 import org.atilika.kuromoji.Tokenizer
 import org.atilika.kuromoji.Token
-import java.util.List;
-
+import java.util.ArrayList;
 
 
 object StreamingTwitter {
@@ -19,9 +18,12 @@ object StreamingTwitter {
       val listener: StatusListener = new StatusListener {
         def onStatus(status: Status) = {
               print(status.getText())
+              if(isJap(status.getText())==true){
+                 var score:Double = feelingDictionary.getFellingScore(status.getText())
+                 
+              }
               
-              
-              
+           
             }
         def onDeletionNotice(s: StatusDeletionNotice) = {}
         def onTrackLimitationNotice(numberOfLimitedStatuses: Int) = {}
@@ -32,19 +34,20 @@ object StreamingTwitter {
             }
       }
      
-      var test : List[String] = getWordList("´Œ´‚ª‘ß•ß‚³‚ê‚½")
+      var test : ArrayList[String] = getWordList("´Œ´‚ª‘ß•ß‚³‚ê‚½")
       
-      //twitterStream.addListener(listener)
-    	//twitterStream.sample()
+      twitterStream.addListener(listener)
+    	twitterStream.sample()
     }
     
-    def getWordList(str:String):List[String] ={
+    def getWordList(str:String):ArrayList[String] ={
       val tokenizer:Tokenizer = Tokenizer.builder().mode(Tokenizer.Mode.NORMAL).build()
-      val tokens:List[Token] = tokenizer.tokenize(str)
-      var word : List[String] = null
-       
-      
-     
+      val tokens = tokenizer.tokenize(str).toArray()
+      var word : ArrayList[String] = new ArrayList[String]()
+      tokens.foreach{ t => 
+        val token = t.asInstanceOf[Token]
+        word.add(token.getSurfaceForm())
+      }
       return word
      
     }
